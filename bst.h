@@ -42,6 +42,8 @@ class Tree {
     void printTest();
     void inorderIterateTest(Node<T> *);
     int getHeight(Node<T> *);
+    void setHeight(Node<T> *);
+    Node<T> *min(Node<T> *);
 
 };
 
@@ -57,7 +59,74 @@ class AVLtree : public Tree<T>
     Node<T>* rotate(Node<T> *, Node<T> *, Node<T> *,int);
     Node<T>* leftRotate(Node<T> *, Node<T> *, Node<T> *);
     Node<T>* rightRotate(Node<T> *, Node<T> *, Node<T> *);
+
+ 
+    void remove(T key);
+    Node<T>* removeHelper(Node<T> *, T );
 };
+
+
+
+template <class T>
+Node<T> * Tree<T>::min(Node<T> *root) 
+{
+    if(!root) return 0;
+    else {
+	while(root && root->left) root = root->left;
+	return root;
+    }
+}
+
+
+template <class T>
+void Tree<T>::setHeight(Node<T> *root)
+{
+    root->height = max(this->getHeight(root->left), this->getHeight(root->right)) + 1;
+}
+
+template <class T>
+Node<T>* AVLtree<T>::removeHelper(Node<T> *root, T key)
+{
+    Node<T> *temp = 0;
+    if(root) {
+	if(root->data == key) {
+	    if(!root->left && !root->right) { // leaf node 
+		delete(root);
+		return 0;
+	    } else if(root->left && root->right) {  // have both child
+		temp = this->min(root->right);
+		root->data = temp->data;
+		root->right = removeHelper(root->right, temp->data);
+		this->setHeight(root);
+		return root;
+	    } else if(root->left) {
+		temp = root->left;
+		temp->parent = root->parent;
+		delete(root);
+		return temp;
+	    } else {
+		temp = root->right;
+		temp->parent = root->parent;
+		delete(root);
+		return temp;
+	    }
+
+	} else if(root->data < key) {
+	    root->right = removeHelper(root->right, key);
+	    this->setHeight(root);
+	}else {
+	    root->left = removeHelper(root->left, key);
+	    this->setHeight(root);
+	}
+    }
+
+}
+
+template<class T>
+void AVLtree<T>::remove(T key)
+{
+    if(this->root) this->root = removeHelper(this->root, key);
+}
 
 template < class T>
 int Tree<T>::getHeight(Node<T> *root)
