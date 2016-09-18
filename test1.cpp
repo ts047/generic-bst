@@ -12,6 +12,17 @@ int main()
 
     t.printTest();
 
+
+    t.remove(14);
+    cout << "\n";
+    t.printTest();
+    t.remove(23);
+    cout << "\n";
+    t.printTest();
+    t.remove(21);
+    cout << "\n";
+    t.printTest();
+
     return 0;
 }
 
